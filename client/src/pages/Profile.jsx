@@ -72,7 +72,7 @@ const Profile = () => {
           </div>
       </div>
       {/* Edit profile model */}
-      {showEdit && <p>Show profile edit</p>}
+      {showEdit && <p>It is show edit page</p>}
     </div>
   )
   :
