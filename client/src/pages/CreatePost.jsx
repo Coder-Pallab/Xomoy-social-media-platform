@@ -21,7 +21,7 @@ const CreatePost = () => {
         {/* Title */}
         <div className='mb-8'>
           <h1 className='text-3xl font-bold text-slate-900 mb-2'>Create Post</h1>
-          <p className='text-slate-600'>Share your thought wuth the world</p>
+          <p className='text-slate-600'>Share your thought with the world</p>
         </div>
         {/* Form */}
 
