@@ -1,0 +1,30 @@
+import express from 'express';
+import cors from 'cors';
+import 'dotenv/config';
+import connectDB from './configs/db.js';
+import dns from 'dns';
+import { inngest, functions } from './inngest/index.js';
+import { serve } from 'inngest/express'
+
+// Changing DNS server, Because my DNS server is blocking mongodb connection
+dns.setServers(["1.1.1.1", "8.8.8.8"]);
+
+// Creating express app
+const app = express();
+
+// connecting Database
+await connectDB();
+
+// Configuring middlewares
+app.use(express.json());
+app.use(cors());
+
+// Making a Home Route for checking
+app.get('/', (req, res)=> res.send("Server is Running"));
+app.use('/api/inngest', serve({ client: inngest, functions }))
+
+// Defining PORT number
+const PORT = process.env.PORT || 4000;
+
+// Listening to the PORT
+app.listen(PORT, ()=> console.log(`Server is up and running on port http://localhost:${PORT}`))
