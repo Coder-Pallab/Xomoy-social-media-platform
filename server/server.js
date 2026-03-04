@@ -5,6 +5,8 @@ import connectDB from './configs/db.js';
 import dns from 'dns';
 import { inngest, functions } from './inngest/index.js';
 import { serve } from 'inngest/express'
+import { clerkMiddleware } from '@clerk/express';
+import userRouter from './routes/userRoutes.js';
 
 // Changing DNS server, Because my DNS server is blocking mongodb connection
 dns.setServers(["1.1.1.1", "8.8.8.8"]);
@@ -18,10 +20,12 @@ await connectDB();
 // Configuring middlewares
 app.use(express.json());
 app.use(cors());
+app.use(clerkMiddleware());
 
 // Making a Home Route for checking
 app.get('/', (req, res)=> res.send("Server is Running"));
-app.use('/api/inngest', serve({ client: inngest, functions }))
+app.use('/api/inngest', serve({ client: inngest, functions }));
+app.use('/api/user', userRouter);
 
 // Defining PORT number
 const PORT = process.env.PORT || 4000;
