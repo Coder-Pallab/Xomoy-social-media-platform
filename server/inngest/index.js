@@ -3,6 +3,7 @@ import User from "../models/User.js";
 import Connection from "../models/Connection.js";
 import sendEmail from "../configs/nodeMailer.js";
 import Story from "../models/Story.js";
+import Message from "../models/Message.js";
 
 // A client to send and receive events
 export const inngest = new Inngest({ id: "xomoy-app" });
@@ -218,10 +219,91 @@ const deleteStory = inngest.createFunction(
   }
 )
 
+const sendNotificationOfUnseenMessages =  inngest.createFunction(
+  {id: 'send-unseen-message-notification'},
+  {cron: "TZ=America/New_York 0 9 * * *"}, // Every day 9 am
+  async ({step}) => {
+    const messages = await Message.find({seen: false}).populate('to_user_id');
+    const unseenCount = {}
+
+    messages.map(message => {
+      unseenCount[message.to_user_id._id] = (unseenCount[message.to_user_id._id] || 0) + 1;
+    })
+
+    for (const userId in unseenCount) {
+      const user = await User.findById(userId);
+
+      const subject = `💬 You have ${unseenCount[userId]} unseen messages...`;
+
+      const body = `<div style="font-family: Arial, sans-serif; background-color:#f3f4f6; padding:40px 0;">
+
+  <div style="max-width:520px; margin:auto; background:#ffffff; padding:30px; border-radius:12px; box-shadow:0 4px 15px rgba(0,0,0,0.08);">
+
+    <!-- Header -->
+    <div style="text-align:center; margin-bottom:20px;">
+      <h2 style="margin:0; color:#111827;">📩 New Messages Waiting</h2>
+    </div>
+
+    <!-- Greeting -->
+    <h3 style="margin-top:10px; color:#111827;">
+      Hi ${user.full_name},
+    </h3>
+
+    <p style="font-size:15px; color:#374151; line-height:1.6;">
+      You have <strong style="color:#10b981;">${unseenCount[userId]} unread message(s)</strong> waiting for you on <strong>Xomoy</strong>.
+    </p>
+
+    <p style="font-size:14px; color:#6b7280; line-height:1.6;">
+      Open your inbox to read and reply to your messages.
+    </p>
+
+    <!-- Button -->
+    <div style="text-align:center; margin:30px 0;">
+      <a href="${process.env.FRONTEND_URL}/messages"
+         style="background-color:#10b981;
+                color:#ffffff;
+                padding:12px 28px;
+                text-decoration:none;
+                border-radius:8px;
+                font-weight:bold;
+                font-size:14px;
+                display:inline-block;">
+        Open Messages
+      </a>
+    </div>
+
+    <p style="font-size:13px; color:#9ca3af; text-align:center;">
+      Stay connected and never miss an important conversation.
+    </p>
+
+    <hr style="border:none; border-top:1px solid #e5e7eb; margin:25px 0;" />
+
+    <!-- Footer -->
+    <p style="font-size:14px; color:#4b5563;">
+      Cheers,<br/>
+      <strong style="color:#10b981;">Xomoy Team</strong><br/>
+      <span style="font-size:12px;">Stay Connected, Be Proud Assamese ❤️</span>
+    </p>
+
+  </div>
+
+</div>`;
+      await sendEmail({
+        to: user.email,
+        subject,
+        body
+      })
+    }
+    return { message: "Notification sent"}
+  }
+)
+
 // Inngest functions
 export const functions = [
     syncUserCreation,
     syncUserUpdation,
     syncUserDeletion,
-    sendNewConnectionRequestReminder
+    sendNewConnectionRequestReminder,
+    deleteStory,
+    sendNotificationOfUnseenMessages
 ];
