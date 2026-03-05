@@ -1,5 +1,7 @@
 import imagekit from "../configs/imagekit.js";
+import { inngest } from "../inngest/index.js";
 import Connection from "../models/Connection.js";
+import Post from "../models/Post.js";
 import User from "../models/User.js";
 import fs from 'fs';
 
@@ -168,7 +170,7 @@ export const unfollowUser = async (req, res) => {
 // Send Connection Request
 export const sendConnectionRequest = async (req, res) => {
     try {
-        const { userId } = req.Auth();
+        const { userId } = req.auth();
         const { id } = req.body;
 
         // Check if the user send more than 20 connection requests in the last 24 hours
@@ -187,9 +189,14 @@ export const sendConnectionRequest = async (req, res) => {
         })
 
         if(!connection){
-            await Connection.create({
+            const newConnection = await Connection.create({
                 from_user_id: userId,
                 to_user_id: id
+            })
+
+            await inngest.send({
+                name: 'app/connection-request',
+                data: {connectionId: newConnection._id}
             })
             return res.json({ success: true, message: 'Connection request sent successfully'})
         }else if(connection && connection.status === 'accepted'){
@@ -206,7 +213,7 @@ export const sendConnectionRequest = async (req, res) => {
 // Get user connections
 export const getUserConnections = async (req, res) => {
     try {
-        const { userId } = req.Auth();
+        const { userId } = req.auth();
         const user = await User.findById(userId).populate('connections followers following');
 
         const connections = user.connections
@@ -225,7 +232,7 @@ export const getUserConnections = async (req, res) => {
 // Accept connection request
 export const acceptConnectionRequest = async (req, res) => {
     try {
-        const { userId } = req.Auth();
+        const { userId } = req.auth();
         const { id } = req.body;
 
         const connection = await Connection.findOne({from_user_id: id, to_user_id: userId})
@@ -249,6 +256,24 @@ export const acceptConnectionRequest = async (req, res) => {
 
     } catch (error) {
         console.log(error);
+        res.json({ success: false, message: error.message })
+    }
+}
+
+// Get user profiles
+export const getUserProfiles = async (req, res) => {
+    try {
+        const { profileId } = req.body;
+        const profile = await User.findById(profileId)
+
+        if(!profile){
+            return res.json({success: false, message: "Profile not found"});
+        }
+        const posts = await Post.find({user: profileId}).populate('user')
+
+        res.json({success: true, profile, posts})
+    } catch (error) {
+         console.log(error);
         res.json({ success: false, message: error.message })
     }
 }
