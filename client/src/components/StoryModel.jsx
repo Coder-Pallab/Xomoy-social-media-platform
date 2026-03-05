@@ -57,7 +57,7 @@ const StoryModel = ({setShowModel, fetchStories}) => {
                 <button onClick={()=> { setMode("text"); setMedia(null); setPreviewUrl(null)}} className={`flex-1 flex items-center justify-center gap-2 p-2 rounded ${mode === 'text' ? "bg-white text-black" : "bg-zinc-800"} cursor-pointer`}>
                     <TextIcon size={18}/> Text
                 </button>
-                <label className={`flex-1 flex items-center justify-center gap-2 p-2 rounded cursor-pointer ${mode === 'media' ? 'bg-white text-black' : 'bg-zinc-800'}`}>
+                <label className={`flex-1 flex items-center justify-center gap-2 p-2 rounded cursor-pointer hover:bg-indigo-600 hover:text-black transition duration-300 ${mode === 'media' ? 'bg-white text-black' : 'bg-zinc-800'}`}>
                     <input onChange={(e)=> {handleMediaUpload(e); setMode('media')}} type="file" accept='image/*, video/*' className='hidden'/>
                     <Upload size={18}/> Photo/Video
                 </label>
