@@ -17,7 +17,7 @@ export const addUserStory = async (req, res) => {
             const fileBuffer = fs.readFileSync(media.path)
             const response = await imagekit.upload({
                 file: fileBuffer,
-                fileName: media.originalName,
+                fileName: media.originalname,
             })
             media_url = response.url
         }
