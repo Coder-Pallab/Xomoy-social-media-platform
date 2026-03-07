@@ -10,12 +10,13 @@ import Profile from './pages/Profile'
 import CreatePost from './pages/CreatePost'
 import { useUser, useAuth } from "@clerk/clerk-react"
 import Layout from './pages/Layout'
-import { Toaster } from "react-hot-toast"
+import toast, { Toaster } from "react-hot-toast"
 import { useEffect } from 'react'
 import { useDispatch } from 'react-redux'
 import { fetchUser } from './features/user/userSlice.js'
 import { fetchConnections } from './features/connections/connectionsSlice.js'
 import { addMessages } from './features/messages/messagesSlice.js'
+import Notification from './components/Notification.jsx'
 
 const App = () => {
   const { user } = useUser();
@@ -34,7 +35,7 @@ const App = () => {
       }
     }
     fetchData()
-  }, [user, getToken, dispatch]);
+  }, [user, getToken, dispatch])
 
   useEffect(()=> {
     pathnameRef.current = pathname 
@@ -42,7 +43,7 @@ const App = () => {
 
   useEffect(()=> {
     if(user){
-      const eventSource = new EventSource(import.meta.env.VITE_BASEURL + '/api/message/' + user._id);
+      const eventSource = new EventSource(import.meta.env.VITE_BASEURL + '/api/messages/' + user.id);
 
       eventSource.onmessage = (event)=> {
         const message = JSON.parse(event.data)
@@ -50,7 +51,9 @@ const App = () => {
         if(pathnameRef.current === ('/messages/' + message.from_user_id._id)) {
           dispatch(addMessages(message))
         }else {
-
+          toast.custom((t)=> (
+            <Notification t={t} message={message}/>
+          ), {position: "bottom-right"})
         }
       } 
       return ()=> {
