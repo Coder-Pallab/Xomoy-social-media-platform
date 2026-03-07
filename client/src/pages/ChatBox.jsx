@@ -99,6 +99,12 @@ const ChatBox = () => {
         </div>
       </div>
       <div className='px-4'>
+        <div className="max-w-xl mx-auto mb-3 flex items-start gap-2 bg-yellow-50 border-l-4 border-yellow-500 text-yellow-800 p-3 rounded-md shadow-sm">
+          <span className="text-lg">📢</span>
+          <p className="text-sm">
+            <span className="font-semibold">Announcement:</span> Do not send image files larger than <span className="font-semibold">5MB</span>.
+          </p>
+        </div>
         <div className='flex items-center gap-3 pl-5 p-1.5 bg-white w-full max-w-xl mx-auto border border-gray-200 shadow rounded-full mb-5'>
           <input
             onKeyDown={e => e.key === 'Enter' && sendMessage()}
