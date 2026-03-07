@@ -21,7 +21,7 @@ const app = express();
 await connectDB();
 
 // Defining Origins
-const allowedOrigins = ['http://localhost:5173']
+const allowedOrigins = ['http://localhost:5173', 'https://xomoy-social-beta.vercel.app']
 
 // Configuring middlewares
 app.use(express.json());
