@@ -41,7 +41,7 @@ const Profile = () => {
   useEffect(() => {
     if(profileId){
       fetchUser(profileId)
-    }else{
+    }else if(currentUser?._id){
       fetchUser(currentUser._id)
     }
   }, [profileId, currentUser])
