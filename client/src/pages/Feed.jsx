@@ -50,10 +50,12 @@ const Feed = () => {
       <div className='max-xl:hidden sticky top-0'>
         <div className='max-w-xs bg-white text-xs p-4 rounded-md inline-flex flex-col gap-2 shadow'>
           <h3 className='text-slate-800 font-bold'>Sponsored</h3>
-          <img src={assets.sponsored_img} className='w-75 h-50 rounded-md' alt="" />
-          <p className='text-slate-600'>Email Marketing</p>
+          <a href='https://fullstackpallab.vercel.app' target='_blank'>
+            <img src={assets.sponsored_img} className='w-70 h-45 rounded-md active:scale-95 hover:scale-105 transition-all duration-300' alt="" />
+          </a>
+          <p className='text-slate-600 font-bold'>Fullstack Pallab</p>
           <p className='
-          text-slate-400'>Supercharge your marketing with a powerful, easy-to-use platform built for results.</p>
+          text-slate-400'>Supercharge your business with a powerful, easy-to-use platform built for results.</p>
         </div>
         <RecentMessages />
       </div>
